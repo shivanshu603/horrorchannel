@@ -14,6 +14,7 @@ class ContentBrain:
         self.history_file = "topics_history.json"
         self.history = self.load_history()
 
+    # ================== HISTORY ==================
     def load_history(self):
         if os.path.exists(self.history_file):
             try:
@@ -26,87 +27,89 @@ class ContentBrain:
     def save_history(self, topic):
         if topic and topic not in self.history["used_topics"]:
             self.history["used_topics"].append(topic)
+
             if len(self.history["used_topics"]) > 200:
                 self.history["used_topics"] = self.history["used_topics"][-150:]
+
             with open(self.history_file, "w", encoding="utf-8") as f:
                 json.dump(self.history, f, indent=4, ensure_ascii=False)
 
+    # ================== SCRIPT ==================
     def generate_script(self):
-        print("🎬 Generating Global Did You Know Short...")
+        print("🎬 Generating Viral Horror Short...")
 
-       prompt = """
-You are an ELITE horror storyteller who creates EXTREMELY TERRIFYING, VIRAL Hindi Horror Podcast Shorts that feel disturbingly REAL.
+        used_topics = ", ".join(self.history.get("used_topics", [])[-20:])
 
-Create ONE horror story (40–50 seconds) that makes the listener uncomfortable, paranoid, and scared to be alone.
+        prompt = f"""
+You are an ELITE horror storyteller creating VIRAL Hinglish Horror Shorts.
 
-STRICT RULES:
+Avoid repeating these topics:
+{used_topics}
 
-- Language: Hinglish (natural spoken Hindi with Urdu tone, like real conversation)
-- Tone: Dark, disturbing, realistic, psychological horror (NO fantasy monsters)
-- The story MUST feel like it actually happened to someone
+Create ONE extremely realistic horror story (40–50 sec).
 
-STORY STRUCTURE:
+RULES:
+- Hinglish (natural spoken style)
+- VERY short broken sentences
+- Use "..." for pauses
+- Make it feel like real incident
 
-1. HOOK (first 2–3 seconds MUST be shocking)
-   - Start with a line that instantly triggers fear or curiosity
-   - Example style: “Mujhe aaj tak samajh nahi aaya… woh aadmi mere ghar ke andar kaise aaya…”
+STRUCTURE:
 
-2. BUILD REALISTIC FEAR:
-   - Use relatable characters (Rohit, Ayesha, family, flatmates, etc.)
-   - Setting must be realistic:
-     (empty house, late night, apartment, PG, lift, road, hospital, etc.)
-   - Slowly build tension using SMALL DETAILS:
-     (lights flickering, phone glitching, footsteps, door movement, breathing sounds)
+HOOK:
+Start with shocking line
+Example: "Kal raat... mere room me koi tha..."
 
-3. AUDIO IMMERSION (VERY IMPORTANT):
-   - Add creepy sound cues in brackets:
-     (sudden silence...), (slow footsteps...), (door creaks...), (faint whisper...), (breathing close to ear...)
-   - Use silence strategically before scary moments
+BODY:
+- Real setting (ghar, PG, road, lift, hospital)
+- Add small details (lights flicker, footsteps, phone glitch)
 
-4. PSYCHOLOGICAL HORROR:
-   - Focus on fear of being watched, not being alone, something almost seen
-   - Avoid jump-scare only — build dread
+STYLE:
+- Write like someone is speaking (NOT paragraph)
+- Example:
+"Main ghar aaya...
+lights band thi...
+(silence...)
+phir mujhe awaaz aayi..."
 
-5. CLIMAX (DISTURBING TWIST):
-   - End with a twist that changes the whole story
-   - Make it deeply unsettling:
-     - something was inside all along
-     - someone is still there
-     - narrator realizes something horrifying
+CLIMAX:
+- disturbing twist
+- something still there
 
-6. ENDING:
-   - End with a chilling question or line that lingers in mind
-   - Make listener paranoid
+ENDING:
+- scary question
 
-OUTPUT FORMAT (STRICT JSON ONLY):
+VISUAL KEYWORDS (VERY IMPORTANT):
+Give 5 realistic cinematic keywords:
+- dark room night
+- empty corridor horror
+- shadow figure silhouette
+- lonely road night fog
+- scared person close up
+
+OUTPUT JSON:
 
 [
-  {
+  {{
     "id": 1,
-    "title": "Ultra-clickbait, SEO optimized scary Hinglish title (VERY intriguing)",
-    "text": "Full cinematic horror narration with pauses, emotions, and sound cues",
-    "visual_1": "hyper realistic dark horror cinematic scene, night, shadows",
-    "visual_2": "close-up fear expression, dim lighting, tension",
-    "visual_3": "empty room, flickering lights, night atmosphere",
-    "visual_4": "shadow figure or unseen presence, realistic horror",
-    "visual_5": "intense climax, disturbing scene, cinematic horror"
-  }
+    "title": "Very clickable Hinglish horror title",
+    "text": "broken emotional horror narration with pauses",
+    "visual_1": "realistic horror scene keyword",
+    "visual_2": "face fear expression dark",
+    "visual_3": "empty room night flicker",
+    "visual_4": "shadow figure dark",
+    "visual_5": "disturbing climax scene"
+  }}
 ]
-
-IMPORTANT:
-- Make it feel like a TRUE INCIDENT
-- No over-explaining
-- Keep sentences short, natural, spoken style
-- The fear should stay AFTER the story ends
 """
 
-        models = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-3.1-flash"]
+        models = ["gemini-2.5-flash", "gemini-2.5-flash-lite"]
 
         for model_name in models:
             for attempt in range(3):
                 try:
-                    print(f"🔄 Trying {model_name} (Attempt {attempt+1}/3)")
-                    
+                    print(f"🔄 {model_name} Attempt {attempt+1}")
+
                     response = client.models.generate_content(
                         model=model_name,
                         contents=prompt,
@@ -116,24 +119,19 @@ IMPORTANT:
                     clean = response.text.strip().replace("```json", "").replace("```", "").strip()
                     result = json.loads(clean)
 
-                    # Save topic for avoiding repetition
-                    title = result[0].get("title", "") if isinstance(result, list) else ""
-                    if title:
-                        self.save_history(title)
+                    if isinstance(result, list) and result:
+                        title = result[0].get("title", "")
+                        if title:
+                            self.save_history(title)
 
-                    print(f"✅ SUCCESS with {model_name}")
-                    return result   # ← List return kar rahe hain
+                        print("✅ Script Generated")
+                        return result
 
                 except Exception as e:
-                    err = str(e)
-                    print(f"❌ Failed {model_name}: {err[:150]}")
-                    if "503" in err or "high demand" in err:
-                        time.sleep(10)
-                        continue
-                    else:
-                        break
+                    print(f"❌ {model_name} Error: {str(e)[:120]}")
+                    time.sleep(5)
 
-        print("❌ All models failed.")
+        print("❌ All models failed")
         return None
 
 

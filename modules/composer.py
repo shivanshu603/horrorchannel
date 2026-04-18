@@ -83,16 +83,17 @@ class Composer:
                 video_stream = ffmpeg.concat(stream_a, stream_b, v=1, a=0)
 
             # Final Output
-            runner = ffmpeg.output(
-                video_stream, 
-                audio_stream, 
-                output_path,
-                vcodec='libx264',
-                acodec='aac',
-                pix_fmt='yuv420p',
-                preset='medium',
-                movflags='faststart'
-            )
+           runner = ffmpeg.output(
+              v_stream, 
+              a_stream, 
+              output_path,
+              vcodec='libx264',
+              acodec='aac',
+              pix_fmt='yuv420p',
+              preset='medium',
+              movflags='faststart',
+              t=58   # 🔥 NEVER CROSS 60
+)
             
             runner.run(overwrite_output=True, quiet=True)
             return output_path

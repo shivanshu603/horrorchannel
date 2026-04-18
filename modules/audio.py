@@ -16,13 +16,14 @@ class AudioEngine:
         for attempt in range(retries):
             try:
                 # Natural + Satisfying voice settings
-                communicate = edge_tts.Communicate(
-                    text=text,
-                    voice=self.voice,
-                    rate="+2%",      # Thoda fast for energy
-                    pitch="-6Hz"      # deep horror tone
-                    volume="+10%"
-                )
+communicate = edge_tts.Communicate(
+    text=text,
+    voice=self.voice,
+    rate="+2%",       # Thoda fast for energy
+    pitch="-6Hz",     # deep horror tone
+    volume="+10%"     # louder output
+)
+
                 
                 await communicate.save(output_path)
                 print(f"   ✅ Natural Hindi Male Voice (MadhurNeural) generated")

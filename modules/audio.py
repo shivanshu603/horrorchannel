@@ -19,7 +19,9 @@ class AudioEngine:
                 communicate = edge_tts.Communicate(
                     text=text,
                     voice=self.voice,
-                    rate="+2%"   # Thoda fast for energy
+                    rate="+2%",
+                    pitch="-3Hz",
+                    volume="+8%"            # Thoda fast for energy
                 )
                 
                 await communicate.save(output_path)

@@ -20,8 +20,8 @@ communicate = edge_tts.Communicate(
     text=text,
     voice=self.voice,
     rate="+2%",       # Thoda fast for energy
-    pitch="-6Hz",     # deep horror tone
-    volume="+10%"     # louder output
+    pitch="-3Hz",     # deep horror tone
+    volume="+8%"     # louder output
 )
 
                 

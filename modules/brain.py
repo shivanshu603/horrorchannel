@@ -34,41 +34,70 @@ class ContentBrain:
     def generate_script(self):
         print("🎬 Generating Global Did You Know Short...")
 
-        prompt = """
-You are a master horror storyteller creating VIRAL Hindi Horror Podcast Shorts.
+       prompt = """
+You are an ELITE horror storyteller who creates EXTREMELY TERRIFYING, VIRAL Hindi Horror Podcast Shorts that feel disturbingly REAL.
 
-Create ONE extremely suspenseful, creepy horror story (50-60 seconds).
+Create ONE horror story (40–50 seconds) that makes the listener uncomfortable, paranoid, and scared to be alone.
 
-Rules:
-- Language: Hinglish (natural spoken Hindi + Urdu tone)
-- Start with a VERY STRONG hook (fear + curiosity)
-- Story must feel REAL (no fantasy monsters, use realistic horror like:
-  - haunted house
-  - unknown calls
-  - night incidents
-  -use some characters like a family, friends, or a lone person and their name for relatability
-  - shadow sightings
-  - real-life inspired horror
-)
-- Build suspense step-by-step (slow tension, then twist)
-- Add background sound cues like:
-  (sudden silence...), (footsteps...), (door creak...), (whisper...)
-- End with a disturbing twist or question
+STRICT RULES:
 
-Return ONLY JSON:
+- Language: Hinglish (natural spoken Hindi with Urdu tone, like real conversation)
+- Tone: Dark, disturbing, realistic, psychological horror (NO fantasy monsters)
+- The story MUST feel like it actually happened to someone
+
+STORY STRUCTURE:
+
+1. HOOK (first 2–3 seconds MUST be shocking)
+   - Start with a line that instantly triggers fear or curiosity
+   - Example style: “Mujhe aaj tak samajh nahi aaya… woh aadmi mere ghar ke andar kaise aaya…”
+
+2. BUILD REALISTIC FEAR:
+   - Use relatable characters (Rohit, Ayesha, family, flatmates, etc.)
+   - Setting must be realistic:
+     (empty house, late night, apartment, PG, lift, road, hospital, etc.)
+   - Slowly build tension using SMALL DETAILS:
+     (lights flickering, phone glitching, footsteps, door movement, breathing sounds)
+
+3. AUDIO IMMERSION (VERY IMPORTANT):
+   - Add creepy sound cues in brackets:
+     (sudden silence...), (slow footsteps...), (door creaks...), (faint whisper...), (breathing close to ear...)
+   - Use silence strategically before scary moments
+
+4. PSYCHOLOGICAL HORROR:
+   - Focus on fear of being watched, not being alone, something almost seen
+   - Avoid jump-scare only — build dread
+
+5. CLIMAX (DISTURBING TWIST):
+   - End with a twist that changes the whole story
+   - Make it deeply unsettling:
+     - something was inside all along
+     - someone is still there
+     - narrator realizes something horrifying
+
+6. ENDING:
+   - End with a chilling question or line that lingers in mind
+   - Make listener paranoid
+
+OUTPUT FORMAT (STRICT JSON ONLY):
 
 [
   {
     "id": 1,
-    "title": "SEO optimized scary title in Hinglish",
-    "text": "Full horror narration script",
-    "visual_1": "dark cinematic horror scene keywords",
-    "visual_2": "creepy realistic visuals keywords",
-    "visual_3": "night environment horror visuals",
-    "visual_4": "shadow or unknown presence visuals",
-    "visual_5": "fear climax visuals"
+    "title": "Ultra-clickbait, SEO optimized scary Hinglish title (VERY intriguing)",
+    "text": "Full cinematic horror narration with pauses, emotions, and sound cues",
+    "visual_1": "hyper realistic dark horror cinematic scene, night, shadows",
+    "visual_2": "close-up fear expression, dim lighting, tension",
+    "visual_3": "empty room, flickering lights, night atmosphere",
+    "visual_4": "shadow figure or unseen presence, realistic horror",
+    "visual_5": "intense climax, disturbing scene, cinematic horror"
   }
 ]
+
+IMPORTANT:
+- Make it feel like a TRUE INCIDENT
+- No over-explaining
+- Keep sentences short, natural, spoken style
+- The fear should stay AFTER the story ends
 """
 
         models = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-3.1-flash"]

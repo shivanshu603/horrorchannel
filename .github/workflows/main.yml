@@ -27,6 +27,7 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
+          pip install edge-tts mutagen
 
       - name: Run Continuous Shorts Generator
         env:

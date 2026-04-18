@@ -1,105 +1,70 @@
+
 import os
-import json
-import time
-from dotenv import load_dotenv
-from google import genai
+import asyncio
+import edge_tts
+from mutagen.mp3 import MP3
 
-load_dotenv()
-
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-
-class ContentBrain:
-    
+class AudioEngine:
     def __init__(self):
-        self.history_file = "topics_history.json"
-        self.history = self.load_history()
+        # Best Natural Indian Male Hindi Voice
+        self.voice = "hi-IN-SwaraNeural"
+        self.output_dir = os.path.join(os.getcwd(), "assets", "audio_clips")
+        os.makedirs(self.output_dir, exist_ok=True)
 
-    def load_history(self):
-        if os.path.exists(self.history_file):
+    async def generate_audio(self, text, output_filename, retries=3):
+        output_path = os.path.join(self.output_dir, output_filename)
+       
+        for attempt in range(retries):
             try:
-                with open(self.history_file, "r", encoding="utf-8") as f:
-                    return json.load(f)
-            except:
-                pass
-        return {"used_topics": []}
+                # Natural + Satisfying voice settings
+                communicate = edge_tts.Communicate(
+                    text=text,
+                    voice=self.voice,
+                    rate="+2%",      # Thoda fast for energy
+                    pitch="-3Hz",    # Masculine aur deep feel
+                    volume="+8%"
+                )
+                
+                await communicate.save(output_path)
+                print(f"   ✅ Natural Hindi feMale Voice (MadhurNeural) generated")
+                return output_path
+           
+            except Exception as e:
+                print(f" ⚠️ Audio Error (Attempt {attempt+1}/{retries}): {e}")
+                if attempt < retries - 1:
+                    await asyncio.sleep(2)
+                else:
+                    print(" ❌ Failed to generate audio after max retries.")
+                    raise e
 
-    def save_history(self, topic):
-        if topic and topic not in self.history["used_topics"]:
-            self.history["used_topics"].append(topic)
-            if len(self.history["used_topics"]) > 200:
-                self.history["used_topics"] = self.history["used_topics"][-150:]
-            with open(self.history_file, "w", encoding="utf-8") as f:
-                json.dump(self.history, f, indent=4, ensure_ascii=False)
+    def get_audio_duration(self, file_path):
+        try:
+            audio = MP3(file_path)
+            return audio.info.length
+        except:
+            return 0.0
 
-    def generate_script(self):
-        print("🎬 Generating Global Did You Know Short...")
+    async def process_script(self, script_data):
+        print(f"🎙️ Starting Audio Generation (Natural Hindi feMale Voice + ASMR Style)...")
 
-        prompt = """
-You are a professional Hindi YouTube Shorts creator making viral "Did You Know" videos.
-
-Create ONE fresh, mind-blowing short (45-60 seconds).
-
-Rules:
-- Script mainly **Hinglish** mein ho (natural spoken)
-- Strong hook se shuru karo
-- End mein powerful line ya sawal ke saath khatam karo
-- Topics global hone chahiye (India, Egypt, Rome, Maya, China, Lost Civilizations, Ancient Science etc.)
-- Har short unique hona chahiye
-
-Return ONLY this exact JSON format:
-
-[
-  {
-    "id": 1,
-    "title": "Hinglish catchy SEO title",
-    "text": "Full spoken Hinglish script here (45-60 seconds)",
-    "visual_1": "cinematic stock footage keywords",
-    "visual_2": "satisfying ASMR style visual keywords"
-  }
-]
-"""
-
-        models = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-3.1-flash"]
-
-        for model_name in models:
-            for attempt in range(3):
-                try:
-                    print(f"🔄 Trying {model_name} (Attempt {attempt+1}/3)")
-                    
-                    response = client.models.generate_content(
-                        model=model_name,
-                        contents=prompt,
-                        config={"response_mime_type": "application/json"}
-                    )
-
-                    clean = response.text.strip().replace("```json", "").replace("```", "").strip()
-                    result = json.loads(clean)
-
-                    # Save topic for avoiding repetition
-                    title = result[0].get("title", "") if isinstance(result, list) else ""
-                    if title:
-                        self.save_history(title)
-
-                    print(f"✅ SUCCESS with {model_name}")
-                    return result   # ← List return kar rahe hain
-
-                except Exception as e:
-                    err = str(e)
-                    print(f"❌ Failed {model_name}: {err[:150]}")
-                    if "503" in err or "high demand" in err:
-                        time.sleep(10)
-                        continue
-                    else:
-                        break
-
-        print("❌ All models failed.")
-        return None
-
-
-if __name__ == "__main__":
-    brain = ContentBrain()
-    output = brain.generate_script()
-    if output:
-        with open("latest_script.json", "w", encoding="utf-8") as f:
-            json.dump(output, f, indent=4, ensure_ascii=False)
-        print("✅ latest_script.json saved")
+        for scene in script_data:
+            scene_id = scene.get('id', 1)
+            text = scene.get('text', '')
+            filename = f"voice_{scene_id}.mp3"
+           
+            try:
+                file_path = await self.generate_audio(text, filename)
+                duration = self.get_audio_duration(file_path)
+               
+                scene['audio_path'] = file_path
+                scene['duration'] = duration
+               
+                print(f"   ✅ Scene {scene_id}: {duration:.2f}s generated")
+                
+                await asyncio.sleep(1)
+               
+            except Exception as e:
+                print(f"   ❌ Skipping Scene {scene_id}")
+                continue
+           
+        return script_data

@@ -84,29 +84,42 @@ async def create_one_short():
         script_text = scene.get('text', 'Interesting Fact')
 
         # Strong Hinglish SEO Title
-        title = f"क्या आप जानते हैं? 😱 {script_text[:58]}... | Mind Blowing Facts"
+        title = f"😨 {script_text[:70]}... | DO NOT WATCH ALONE| Real Horror Story | Hindi Horror Podcast"
 
         # Rich SEO Description
-        description = f"""🔥 क्या आप जानते हैं?
+        description = f"""😨 WARNING: This story might scare you...
 
-{script_text[:300]}...
+{script_text[:400]}...
 
-🧠 Duniya ke sabse interesting aur rare facts 
-🌍 Ancient History | Lost Civilizations | Mysterious Knowledge
+🧠 Duniya ke sabse interesting aur rare horror stories, true inspired incidents, aur suspenseful narrations ke liye hamare channel ko subscribe karein! 
+🎧 Real Horror Stories | Night Stories | True Inspired Incidents
 
-👍 Like karo agar dimaag hil gaya
-🔔 Subscribe karo roz naye facts ke liye
+अगर आपको डर लगा 😱 तो LIKE जरूर करें
+और ऐसी stories के लिए SUBSCRIBE करें 🔔
 
-#DidYouKnow #KyaAapJaanteHain #AncientFacts #MindBlowing #HindiFacts #HistoryShorts #ViralFacts"""
-
+#HorrorStory #HindiHorror #ScaryPodcast #RealHorror #GhostStory #Suspense #DarkStories #Creepy #NightStories #ViralShorts"""
         video_path = "assets/final/final_short.mp4"
 
         video_id = uploader.upload(
             video_path=video_path,
             title=title[:100],
             description=description,
-            tags=["didyouknow", "kya aap jaante hain", "mind blowing facts", "ancient history", "hindi facts", "pracheen rahasya", "viral shorts", "knowledge", "interesting facts"],
-            privacy="public"
+           tags = [
+"horror story hindi",
+"scary story",
+"hindi horror podcast",
+"real ghost story",
+"creepy stories",
+"dark stories",
+"night horror",
+"viral horror shorts",
+"suspense story",
+"ghost encounter",
+"haunted house story",
+"unknown calls story",
+"shadow sighting story","real life horror",
+"true inspired horror",
+]
         )
 
         if video_id:

@@ -1,165 +1,170 @@
 import asyncio
 import time
+import os
+import shutil
+
 from modules.brain import ContentBrain
 from modules.asset_manager import AssetManager
 from modules.audio import AudioEngine
 from modules.composer import Composer
-import os
-import shutil
 
+
+# ================== CLEAN CACHE ==================
 def clean_cache():
-    """Safely deletes temporary files"""
-    print("🧹 Cleaning up temporary files...")
-    folders_to_clean = [
-        os.path.join(os.getcwd(), "assets", "audio_clips"),
-        os.path.join(os.getcwd(), "assets", "video_clips"),
-        os.path.join(os.getcwd(), "assets", "temp")
+    folders = [
+        "assets/audio_clips",
+        "assets/video_clips",
+        "assets/temp"
     ]
-    for folder in folders_to_clean:
-        if not os.path.exists(folder):
+
+    for folder in folders:
+        path = os.path.join(os.getcwd(), folder)
+
+        if not os.path.exists(path):
             continue
-        if "assets" not in folder:
-            continue
-        for filename in os.listdir(folder):
-            file_path = os.path.join(folder, filename)
+
+        for file in os.listdir(path):
+            file_path = os.path.join(path, file)
+
             try:
-                if os.path.isfile(file_path) or os.path.islink(file_path):
+                if os.path.isfile(file_path):
                     os.unlink(file_path)
-                    print(f"   Deleted: {filename}")
                 elif os.path.isdir(file_path):
                     shutil.rmtree(file_path)
-            except Exception as e:
-                print(f"   Failed to delete {file_path}: {e}")
-    print("✅ Workspace cleaned!")
+            except:
+                pass
 
 
+# ================== HOOK BOOST ==================
+def optimize_hook(text):
+    lines = text.split("\n")
+
+    if len(lines) > 2:
+        # Make first line sharper
+        lines[0] = "Kal raat... jo hua... woh normal nahi tha..."
+
+    return "\n".join(lines)
+
+
+# ================== CREATE SHORT ==================
 async def create_one_short():
-    """Ek short generate + upload karega"""
-    print("🚀 Starting New Short Generation...")
+    print("🚀 Creating Horror Short...\n")
 
-    # 1. BRAIN - Script Generate
-    brain = ContentBrain()
     try:
+        # ===== SCRIPT =====
+        brain = ContentBrain()
         script_data = brain.generate_script()
+
         if not script_data:
-            print("❌ Script generation failed")
             return False
-    except Exception as e:
-        print(f"❌ Brain Error: {e}")
-        return False
 
-    # 2. AUDIO - Natural Hindi Male Voice
-    audio_engine = AudioEngine()
-    try:
+        scene = script_data[0]
+
+        # 🔥 Hook Optimization
+        scene["text"] = optimize_hook(scene.get("text", ""))
+
+        # ===== AUDIO =====
+        audio_engine = AudioEngine()
         script_data = await audio_engine.process_script(script_data)
-    except Exception as e:
-        print(f"❌ Audio Error: {e}")
-        return False
 
-    # 3. ASSETS - Stock Footage
-    asset_manager = AssetManager()
-    assets_map = asset_manager.get_videos(script_data)
+        # ===== ASSETS =====
+        asset_manager = AssetManager()
+        assets_map = asset_manager.get_videos(script_data)
 
-    # 4. COMPOSER - Video Banaye
-    composer = Composer()
-    final_scene_paths = composer.render_all_scenes(script_data, assets_map)
+        if not assets_map:
+            return False
 
-    if not final_scene_paths:
-        print("❌ Failed to generate scenes")
-        return False
+        # ===== VIDEO =====
+        composer = Composer()
+        scene_paths = composer.render_all_scenes(script_data, assets_map)
 
-    # 5. Final Video with Transitions
-    composer.concatenate_with_transitions(final_scene_paths)
-    clean_cache()
-    print("✅ Short successfully created!")
+        if not scene_paths:
+            return False
 
-    # ================== YOUTUBE UPLOAD (Better SEO) ==================
-    print("📤 Uploading to YouTube...")
+        final_video = composer.concatenate_with_transitions(scene_paths)
 
-    try:
+        if not final_video or not os.path.exists(final_video):
+            return False
+
+        print("✅ Video Ready")
+
+        # ===== CLEAN =====
+        clean_cache()
+
+        # ===== UPLOAD =====
+        print("📤 Uploading...\n")
+
         from modules.uploader import YouTubeUploader
         uploader = YouTubeUploader()
 
-        scene = script_data[0] if isinstance(script_data, list) else script_data
-        script_text = scene.get('text', 'Interesting Fact')
+        title = scene.get("title", "Scary Horror Story")
 
-        # Strong Hinglish SEO Title
-        title = f"😨 {script_text[:70]}... | DO NOT WATCH ALONE| Real Horror Story | Hindi Horror Podcast"
+        # 🔥 POWER TITLE
+        final_title = f"😱 {title} | Don't Watch Alone | Real Horror"
 
-        # Rich SEO Description
-        description = f"""😨 WARNING: This story might scare you...
+        description = f"""
+😨 WARNING: This is not just a story...
 
-{script_text[:400]}...
+{scene.get("text","")[:400]}...
 
-🧠 Duniya ke sabse interesting aur rare horror stories, true inspired incidents, aur suspenseful narrations ke liye hamare channel ko subscribe karein! 
-🎧 Real Horror Stories | Night Stories | True Inspired Incidents
+अगर डर लगा 😱 तो LIKE करो
+और ऐसे horror videos के लिए SUBSCRIBE 🔔
 
-अगर आपको डर लगा 😱 तो LIKE जरूर करें
-और ऐसी stories के लिए SUBSCRIBE करें 🔔
-
-#HorrorStory #HindiHorror #ScaryPodcast #RealHorror #GhostStory #Suspense #DarkStories #Creepy #NightStories #ViralShorts"""
-        video_path = "assets/final/final_short.mp4"
+#Horror #Scary #HindiHorror #Ghost #ViralShorts
+"""
 
         video_id = uploader.upload(
-            video_path=video_path,
-            title=title[:100],
+            video_path=final_video,
+            title=final_title[:100],
             description=description,
-           tags = [
-"horror story hindi",
-"scary story",
-"hindi horror podcast",
-"real ghost story",
-"creepy stories",
-"dark stories",
-"night horror",
-"viral horror shorts",
-"suspense story",
-"ghost encounter",
-"haunted house story",
-"unknown calls story",
-"shadow sighting story","real life horror",
-"true inspired horror",
-]
+            tags=[
+                "horror story",
+                "scary video",
+                "ghost story",
+                "dark horror",
+                "creepy story",
+                "viral shorts",
+                "hindi horror"
+            ]
         )
 
         if video_id:
-            print(f"✅ VIDEO UPLOADED SUCCESSFULLY!")
-            print(f"🔗 https://youtu.be/{video_id}")
+            print(f"✅ Uploaded: https://youtu.be/{video_id}")
             return True
-        else:
-            print("❌ Upload failed")
-            return False
+
+        return False
 
     except Exception as e:
-        print(f"❌ Upload Error: {e}")
+        print(f"❌ ERROR: {e}")
         return False
 
 
+# ================== MAIN LOOP ==================
 async def main():
-    print("🚀 CONTINUOUS HINDI FACTS MODE STARTED...")
-    print("Will keep generating fresh shorts until GitHub stops the job...\n")
+    print("💀 HORROR AI ENGINE RUNNING...\n")
 
-    short_count = 0
     start_time = time.time()
+    count = 0
 
     while True:
-        short_count += 1
-        print(f"\n🔄 === Generating Short #{short_count} ===\n")
+        count += 1
+        print(f"\n🎬 SHORT #{count}\n")
 
-        success = await create_one_short()
+        # 🔁 Retry system
+        for attempt in range(2):
+            success = await create_one_short()
 
-        if success:
-            print(f"✅ Short #{short_count} completed & uploaded!")
-        else:
-            print(f"⚠️ Short #{short_count} had some issues. Continuing...")
+            if success:
+                print(f"✅ Short #{count} DONE\n")
+                break
+            else:
+                print(f"⚠️ Retry {attempt+1}")
 
-        # Wait before next short (balanced rate limit ke liye)
-        print(f"⏳ Waiting 9 minutes before next short...\n")
-        await asyncio.sleep(540)   # 9 minutes
+        print("⏳ Waiting 7 minutes...\n")
+        await asyncio.sleep(420)
 
-        # Safety stop after ~5.5 hours
-        if time.time() - start_time > 19800:
-            print("⏹️ Maximum runtime reached (5.5 hours). Stopping now...")
+        if time.time() - start_time > 18000:
+            print("⏹️ STOP (limit reached)")
             break
 
 

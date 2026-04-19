@@ -71,7 +71,7 @@ Return ONLY JSON:
 ]
 """
 
-        models = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-3.1-flash"]
+        models = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-1.5-flash","gemini-1.5-flash-8b"]
 
         for model_name in models:
             for attempt in range(3):

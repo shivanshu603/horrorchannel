@@ -24,7 +24,9 @@ class Composer:
     def process_scene(self, scene, video_pair, is_avatar=False):
         scene_id = scene.get('id', 1)
         audio_path = scene.get('audio_path')
-        total_duration = scene.get('duration', 0)
+        
+        # STRICT LIMIT: Max 57 seconds per scene (final video 58 sec se kam rahe)
+        total_duration = min(scene.get('duration', 0), 57)
 
         if not audio_path or not os.path.exists(audio_path):
             print(f"   ⚠️ Audio missing for Scene {scene_id}")
@@ -39,7 +41,7 @@ class Composer:
             if os.path.exists(self.bg_music_path):
                 bg_music = (
                     ffmpeg.input(self.bg_music_path, stream_loop=-1)
-                    .filter('volume', 0.18)        # Bahut soft background music
+                    .filter('volume', 0.16)        # Soft background
                     .filter('atrim', duration=total_duration + 1)
                 )
                 # Mix voice + background music
@@ -82,7 +84,7 @@ class Composer:
 
                 video_stream = ffmpeg.concat(stream_a, stream_b, v=1, a=0)
 
-            # Final Output
+            # Final Output with strict duration control
             runner = ffmpeg.output(
                 video_stream, 
                 audio_stream, 
@@ -147,7 +149,7 @@ class Composer:
             next_clip = ffmpeg.input(video_paths[i])
             next_dur = self.get_duration(video_paths[i])
             
-            trans_dur = 0.6
+            trans_dur = 0.5
             offset = current_dur - trans_dur
 
             effect = random.choice(self.transitions)

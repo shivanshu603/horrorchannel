@@ -40,7 +40,7 @@ You are a master horror storyteller creating VIRAL Hindi Horror Podcast Shorts.
 Create ONE extremely suspenseful, creepy horror story (50-60 seconds).
 
 Rules:
-- Language: Hinglish (natural spoken Hindi + Urdu tone)
+- Language: Hindi (natural spoken Hindi + Urdu tone)
 - Start with a VERY STRONG hook (fear + curiosity)
 - Story must feel REAL (no fantasy monsters, use realistic horror like:
   - haunted house

@@ -42,7 +42,7 @@ Create ONE extremely suspenseful, creepy horror story (50-60 seconds).
 Rules:
 - Language: Hindi (natural spoken Hindi + Urdu tone)
 - Start with a VERY STRONG hook (fear + curiosity)
-- Story must feel REAL (no fantasy monsters, use realistic horror like:
+- Story must feel REAL (you can use fantasy monsters, use realistic horror like:
   - haunted house
   - unknown calls
   - night incidents

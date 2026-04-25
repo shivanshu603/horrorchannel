@@ -51,8 +51,7 @@ Rules:
   - real-life inspired horror
 )
 - Build suspense step-by-step (slow tension, then twist)
-- Add background sound cues like:
-  (sudden silence...), (footsteps...), (door creak...), (whisper...)
+- Add some drama 
 - End with a disturbing twist or question
 
 Return ONLY JSON:

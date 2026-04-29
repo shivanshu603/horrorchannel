@@ -29,6 +29,9 @@ jobs:
           pip install -r requirements.txt
           pip install edge-tts mutagen
 
+          - name: Setup Fonts
+            run: python setup_fonts.py
+
       - name: Run Continuous Shorts Generator
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

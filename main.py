@@ -84,7 +84,7 @@ async def create_one_short():
         script_text = scene.get('text', 'Interesting Fact')
 
         # Strong Hinglish SEO Title
-        title = f"😨 {script_text[:70]}... | DO NOT WATCH ALONE| Real Horror Story | Hindi Horror Podcast"
+        title = f"😨horror stories {script_text[:70]}... | DO NOT WATCH ALONE| Real Horror Story | Hindi Horror Podcast"
 
         # Rich SEO Description
         description = f"""😨 WARNING: This story might scare you...
@@ -96,6 +96,12 @@ async def create_one_short():
 
 अगर आपको डर लगा 😱 तो LIKE जरूर करें
 और ऐसी stories के लिए SUBSCRIBE करें 🔔
+We do not own the video materials, and all credits belong to the respective owners. In case of copyright issues, please contact us immediately
+for further credit or removal.
+DISCLAIMER
+Copyright Disclaimer Under Section 107 of the Copyright Act 1976, allowance is made for "fair use" for purposes such as criticism, comment, news reporting,
+teaching, scholarship, and research. Fair use is a use permitted by
+copyright statute that might otherwise be infringing. Non-profit, educational, or personal use tips the balance in favor of fair use.
 
 #HorrorStory #HindiHorror #ScaryPodcast #RealHorror #GhostStory #Suspense #DarkStories #Creepy #NightStories #ViralShorts"""
         video_path = "assets/final/final_short.mp4"

@@ -2,13 +2,13 @@ name: Daily Continuous Hindi horror stories
 
 on:
   schedule:
-    - cron: '0 0,6,12,18 * * *'     # Har 6 ghante mein start (00, 06, 12, 18 baje)
-  workflow_dispatch:                # Manual trigger ke liye (test ke liye)
+    - cron: '0 0,6,12,18 * * *'
+  workflow_dispatch:
 
 jobs:
   generate-and-upload:
     runs-on: ubuntu-latest
-    timeout-minutes: 360            # Maximum 6 hours tak chal sakta hai
+    timeout-minutes: 360
 
     steps:
       - name: Checkout Repository
@@ -29,8 +29,10 @@ jobs:
           pip install -r requirements.txt
           pip install edge-tts mutagen
 
-          - name: Setup Fonts
-            run: python setup_fonts.py
+      - name: Setup Fonts
+        run: |
+          sudo apt-get install -y -q fonts-noto-core
+          python setup_fonts.py
 
       - name: Run Continuous Shorts Generator
         env:
@@ -38,6 +40,7 @@ jobs:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
         run: python main.py
 
       - name: Job Summary
